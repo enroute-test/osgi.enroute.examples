@@ -8,15 +8,15 @@
 import aQute.bnd.build.Workspace
 import aQute.bnd.osgi.Constants
 
-plugins {
-  id "org.sonarqube" version "2.5"
-}
-
 /* Add bnd gradle plugin as a script dependency */
 buildscript {
   dependencies {
     classpath bndPlugin
   }
+}
+
+plugins {
+  id "org.sonarqube" version "2.5"
 }
 
 /* Initialize the bnd workspace */
