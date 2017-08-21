@@ -8,6 +8,9 @@ import org.osgi.dto.DTO;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import osgi.enroute.configurer.api.RequireConfigurerExtender;
 import osgi.enroute.dto.api.DTOs;
 import osgi.enroute.dto.api.TypeReference;
@@ -26,6 +29,8 @@ import osgi.enroute.webserver.capabilities.RequireWebServerExtender;
 @Component(name="osgi.enroute.examples.rest")
 public class RestApplication implements REST {
 
+	private static final Logger LOGGER = LoggerFactory.getLogger(RestApplication.class);
+	
 	@Reference
 	DTOs dtos;
 	
@@ -37,7 +42,7 @@ public class RestApplication implements REST {
 	public String getUpper(RESTRequest rr) {
 		StringBuilder st = new StringBuilder("Get with no argument: \n")
 				.append("  --> rr._host(): " + rr._host() + "\n");
-		System.out.println(st.toString() + "\n");
+		LOGGER.debug(st.toString());		
 		return "ChuckSteak is Awesome".toUpperCase();
 	}
 	
