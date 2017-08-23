@@ -15,4 +15,8 @@ public class ProxycacheImplTest extends TestCase {
 	 * 
 	 * 
 	 */
+
+    public void testName() throws Exception {
+            
+    }
 }
