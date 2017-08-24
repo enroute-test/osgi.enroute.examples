@@ -10,24 +10,23 @@ import aQute.bnd.osgi.Constants
 
 /* Add bnd gradle plugin as a script dependency */
 buildscript {
-  dependencies {
-    classpath bndPlugin
-  }
+
+    repositories {
+        maven {
+            url "https://plugins.gradle.org/m2/"
+        }
+    }
+
+    dependencies {
+        classpath "org.sonarsource.scanner.gradle:sonarqube-gradle-plugin:2.5"
+        classpath bndPlugin
+    }
 }
 
-plugins {
-  id "org.sonarqube" version "2.5"
-}
 
-apply plugin: "java"
-
-dependencies {
-    testCompile 'junit:junit:4.12'
-}
-
-test {
-    ignoreFailures = true
-}
+plugins.apply 'org.sonarqube'
+plugins.apply 'java'
+plugins.apply 'eclipse'
 
 /* Initialize the bnd workspace */
 Workspace.setDriver(Constants.BNDDRIVER_GRADLE)
@@ -36,19 +35,36 @@ ext.bndWorkspace = new Workspace(rootDir, bnd_cnf).setOffline(gradle.startParame
 
 ext.cnf = rootProject.project(bnd_cnf)
 
+
 /* Configure the subprojects */
 subprojects {
-    apply plugin: 'java'
-
-    // Disable the test report for the individual test task
-    test {
-        reports.html.enabled = false
-    }
+    plugins.apply 'java'
     
-  def bndProject = bndWorkspace.getProject(name)
-  if (bndProject != null) {
-    plugins.apply 'biz.aQute.bnd'
-  }
+    def bndProject = bndWorkspace.getProject(name)
+    if (bndProject != null) {
+
+        plugins.apply 'biz.aQute.bnd'
+        plugins.apply 'java'
+        plugins.apply 'eclipse'
+
+        repositories {
+            mavenCentral()
+        }
+
+        dependencies {
+            testCompile group: 'junit', name: 'junit', version: '4.+'
+            compile group: 'junit', name: 'junit', version: '4.+'
+            compile group: 'org.glassfish.jersey.core', name: 'jersey-server', version: '2.2'
+        }
+
+        test {
+            reports.html.enabled = false
+        }
+
+        if (project.hasProperty('bnd')) {
+            apply from: cnf.file('gradle/javadoc.gradle')
+        }
+    }
 }
 
 task wrapper(type: Wrapper) {
@@ -59,4 +75,16 @@ task testReport(type: TestReport) {
     destinationDir = file("$buildDir/reports/allTests")
     // Include the results from the `test` task in all subprojects
     reportOn subprojects*.test
+}
+
+task alljavadoc(type: Javadoc) {
+    subprojects.each { proj ->
+        proj.tasks.withType(Javadoc).each { javadocTask ->
+            source += javadocTask.source
+            classpath += javadocTask.classpath
+            excludes += javadocTask.excludes
+            includes += javadocTask.includes
+        }
+    }
+    destinationDir = file("${buildDir}/docs/javadoc")
 }

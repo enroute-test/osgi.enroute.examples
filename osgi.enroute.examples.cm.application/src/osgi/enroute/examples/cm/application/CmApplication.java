@@ -46,8 +46,6 @@ import osgi.enroute.webserver.capabilities.RequireWebServerExtender;
  * <ul>
  * <li>{@link CmFacade} – Provides the facade to the application from the
  * outside world.
- * <li>{@link Configuration2EventAdmin} – Forwards events about CM to the Event
- * Admin (which forwards it to the browser).
  * <li>{@link ConfigurationListenerExample} – An example listener.
  * <li>{@link ConfigurationPluginExample} – An example plugin. It adds a new
  * key to each configuration before it is delivered. The new key contains the
